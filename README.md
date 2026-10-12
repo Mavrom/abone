@@ -1,32 +1,31 @@
-# React + TypeScript + Vite
+# abone.
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+> Küçük ödemeler, **büyük** toplamlar.
 
-Currently, two official plugins are available:
+Aboneliklerini ekle, ayda ve yılda gerçekte ne kadar ödediğini gör. Netflix, Spotify, ChatGPT, Claude, Exxen,
+Game Pass… Tek tek masum görünürler; hepsi bir arada başka bir hikâye anlatır.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Özellikler
 
-## React Compiler
+- **Hazır katalog**: 30'a yakın popüler servis, planları ve tahmini Türkiye fiyatlarıyla. Plan seç, fiyat otomatik dolsun
+  (her fiyat düzenlenebilir). Listede olmayanlar için özel abonelik.
+- **Her periyot, her para birimi**: haftalık / aylık / 3 aylık / yıllık; ₺, $ ve €. Dolarla ödenen aboneliklerin
+  (ChatGPT, Claude…) güncel kurla TL karşılığı otomatik hesaplanır ([Frankfurter](https://frankfurter.dev) API).
+- **Toplamlar**: aylık, yıllık, haftalık, günlük ve 5 yıllık maliyet.
+- **Yörünge**: aboneliklerin, maliyetleriyle orantılı gezegenler olarak yıllık toplamın etrafında döner.
+- **Kategori dağılımı**, **yaklaşan ödemeler** ve "bu parayla bir yılda kaç lahmacun" karşılaştırmaları.
+- **Gizlilik**: hesap yok, sunucu yok. Veriler yalnızca tarayıcında (`localStorage`) saklanır.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Geliştirme
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm test         # Vitest (hesaplama mantığı)
+npm run build    # tip kontrolü + production build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Stack: Vite, React 19, TypeScript, düz CSS. Fontlar: Instrument Serif, Bricolage Grotesque, JetBrains Mono.
+Marka ikonları [Simple Icons](https://simpleicons.org)'tan.
+
+> Katalogdaki fiyatlar tahminidir ve zamanla değişir; kendi faturana göre düzenlemeyi unutma.
