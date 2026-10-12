@@ -54,14 +54,14 @@ const USD = (name: string, price: number, cycle: Cycle = 'monthly'): Plan => ({
   cycle,
 })
 
-export const CATEGORY_META: Record<Category, { label: string; color: string }> = {
-  video: { label: 'Dizi & Film', color: '#FF6B4A' },
-  music: { label: 'Müzik', color: '#C8F560' },
-  ai: { label: 'Yapay Zeka', color: '#B69CFF' },
-  gaming: { label: 'Oyun', color: '#5CC8FF' },
-  cloud: { label: 'Bulut', color: '#FFD15C' },
-  productivity: { label: 'Üretkenlik', color: '#FF8FCF' },
-  other: { label: 'Diğer', color: '#9A97A3' },
+export const CATEGORY_META: Record<Category, { label: string }> = {
+  video: { label: 'Dizi & Film' },
+  music: { label: 'Müzik' },
+  ai: { label: 'Yapay Zeka' },
+  gaming: { label: 'Oyun' },
+  cloud: { label: 'Bulut' },
+  productivity: { label: 'Üretkenlik' },
+  other: { label: 'Diğer' },
 }
 
 /** Prices are rough Turkish-market estimates; users can edit every price in the form. */
@@ -309,8 +309,6 @@ export const CATALOG: Service[] = [
 ]
 
 export const SERVICE_BY_ID = new Map(CATALOG.map((s) => [s.id, s]))
-
-export const CUSTOM_COLORS = ['#C8F560', '#FF6B4A', '#B69CFF', '#5CC8FF', '#FFD15C', '#FF8FCF', '#9A97A3']
 
 export const EQUIVALENT_ITEMS = [
   { id: 'cay', label: 'bardak çay', emoji: '🍵', priceTRY: 30 },

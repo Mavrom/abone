@@ -69,8 +69,10 @@ export function daysLeftLabel(days: number): string {
   return `${days} gün`
 }
 
-/** Accepts both "1499.99" and Turkish "1.499,99". */
+/** Accepts "1499.99", Turkish "1.499,99" and "1.500" (dot as thousand separator). */
 export function parsePrice(value: string): number {
   const v = value.replace(/[\s₺$€]/g, '')
-  return Number(v.includes(',') ? v.replace(/\./g, '').replace(',', '.') : v)
+  if (v.includes(',')) return Number(v.replace(/\./g, '').replace(',', '.'))
+  if (/^\d{1,3}(\.\d{3})+$/.test(v)) return Number(v.replace(/\./g, ''))
+  return Number(v)
 }

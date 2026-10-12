@@ -1,9 +1,8 @@
-# abone.
+# abone
 
-> Küçük ödemeler, **büyük** toplamlar.
+Aboneliklerini ekle, ayda ve yılda gerçekte ne kadar ödediğini gör.
 
-Aboneliklerini ekle, ayda ve yılda gerçekte ne kadar ödediğini gör. Netflix, Spotify, ChatGPT, Claude, Exxen,
-Game Pass… Tek tek masum görünürler; hepsi bir arada başka bir hikâye anlatır.
+Canlı: https://abone-ruddy.vercel.app
 
 ## Özellikler
 
@@ -11,9 +10,9 @@ Game Pass… Tek tek masum görünürler; hepsi bir arada başka bir hikâye anl
   (her fiyat düzenlenebilir). Listede olmayanlar için özel abonelik.
 - **Her periyot, her para birimi**: haftalık / aylık / 3 aylık / yıllık; ₺, $ ve €. Dolarla ödenen aboneliklerin
   (ChatGPT, Claude…) güncel kurla TL karşılığı otomatik hesaplanır ([Frankfurter](https://frankfurter.dev) API).
-- **Toplamlar**: aylık, yıllık, haftalık, günlük ve 5 yıllık maliyet.
-- **Yörünge**: aboneliklerin, maliyetleriyle orantılı gezegenler olarak yıllık toplamın etrafında döner.
-- **Kategori dağılımı**, **yaklaşan ödemeler** ve "bu parayla bir yılda kaç lahmacun" karşılaştırmaları.
+- **Toplamlar**: aylık, yıllık ve günlük maliyet, abonelik başına ortalama.
+- **Yaklaşan ödemeler** ve **kategori dağılımı**.
+- Sade arayüz, açık/koyu tema (sistem ayarını izler), mobil uyumlu.
 - **Gizlilik**: hesap yok, sunucu yok. Veriler yalnızca tarayıcında (`localStorage`) saklanır.
 
 ## Geliştirme
@@ -25,7 +24,7 @@ npm test         # Vitest (hesaplama mantığı)
 npm run build    # tip kontrolü + production build
 ```
 
-Stack: Vite, React 19, TypeScript, düz CSS. Fontlar: Instrument Serif, Bricolage Grotesque, JetBrains Mono.
+Stack: Vite, React 19, TypeScript, düz CSS, Geist font.
 Marka ikonları [Simple Icons](https://simpleicons.org)'tan.
 
 > Katalogdaki fiyatlar tahminidir ve zamanla değişir; kendi faturana göre düzenlemeyi unutma.

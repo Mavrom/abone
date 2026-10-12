@@ -1,7 +1,10 @@
-import { CURRENCY_SYMBOL } from '../lib/format'
 import type { Currency } from '../lib/types'
 
-const CURRENCIES: Currency[] = ['TRY', 'USD', 'EUR']
+const CURRENCIES: { code: Currency; label: string }[] = [
+  { code: 'TRY', label: 'TL' },
+  { code: 'USD', label: 'USD' },
+  { code: 'EUR', label: 'EUR' },
+]
 
 interface Props {
   currency: Currency
@@ -11,32 +14,28 @@ interface Props {
 
 export function Header({ currency, onCurrency, onAdd }: Props) {
   return (
-    <header className="topbar shell">
-      <a className="brand" href="/" aria-label="abone. ana sayfa">
-        <span className="brand__mark" aria-hidden="true">
-          <span className="brand__planet" />
-        </span>
-        <span>
-          abone<span className="brand__dot">.</span>
-        </span>
-      </a>
-
-      <div className="topbar__actions">
-        <div className="segmented segmented--compact" role="group" aria-label="Gösterim para birimi">
-          {CURRENCIES.map((c) => (
-            <button
-              key={c}
-              className={currency === c ? 'is-active' : ''}
-              aria-pressed={currency === c}
-              onClick={() => onCurrency(c)}
-            >
-              {CURRENCY_SYMBOL[c]}
-            </button>
-          ))}
+    <header className="topbar">
+      <div className="topbar__inner page">
+        <a className="brand" href="/">
+          abone
+        </a>
+        <div className="topbar__actions">
+          <div className="segmented" role="group" aria-label="Para birimi">
+            {CURRENCIES.map((c) => (
+              <button
+                key={c.code}
+                className={currency === c.code ? 'is-active' : ''}
+                aria-pressed={currency === c.code}
+                onClick={() => onCurrency(c.code)}
+              >
+                {c.label}
+              </button>
+            ))}
+          </div>
+          <button className="btn btn--primary" onClick={onAdd}>
+            Ekle
+          </button>
         </div>
-        <button className="btn btn--primary" onClick={onAdd}>
-          <span aria-hidden="true">+</span> Ekle
-        </button>
       </div>
     </header>
   )

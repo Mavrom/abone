@@ -1,5 +1,3 @@
-import type { CSSProperties } from 'react'
-import { CATALOG } from '../data/catalog'
 import { ServiceIcon } from './ServiceIcon'
 
 interface Props {
@@ -7,47 +5,37 @@ interface Props {
   onDemo: () => void
 }
 
-const FLOATERS = ['netflix', 'spotify', 'chatgpt', 'youtube', 'claude', 'icloud', 'psplus', 'disney']
+const HINTS: [string, string][] = [
+  ['netflix', 'Netflix'],
+  ['spotify', 'Spotify'],
+  ['youtube', 'YouTube'],
+  ['claude', 'Claude'],
+  ['icloud', 'iCloud+'],
+  ['psplus', 'PlayStation Plus'],
+]
 
 export function EmptyState({ onAdd, onDemo }: Props) {
-  const services = FLOATERS.map((id) => CATALOG.find((s) => s.id === id)!)
-
   return (
     <section className="empty">
-      <div className="empty__ring" aria-hidden="true">
-        {services.map((s, i) => (
-          <span
-            key={s.id}
-            className="empty__floater"
-            style={{ '--a': `${(i / services.length) * 360}deg`, '--d': `${i * -2.5}s` } as CSSProperties}
-          >
-            <ServiceIcon serviceId={s.id} name={s.name} color={s.color} size={52} />
-          </span>
+      <div className="empty__icons" aria-hidden="true">
+        {HINTS.map(([id, name]) => (
+          <ServiceIcon key={id} serviceId={id} name={name} size={36} />
         ))}
       </div>
-
-      <p className="label">
-        <span className="label__index">00</span>
-        <span className="label__slash">/</span>
-        Abonelik hesaplayıcı
+      <h1 className="empty__title">Aboneliklerin ayda ne kadar tutuyor?</h1>
+      <p className="empty__text">
+        Kullandığın servisleri ve planlarını ekle; aylık, yıllık ve günlük toplamını hesaplayalım. Dolar ve
+        euro ile ödenenler güncel kurla çevrilir.
       </p>
-      <h1 className="empty__title">
-        Küçük ödemeler,
-        <br />
-        <em>büyük</em> toplamlar.
-      </h1>
-      <p className="empty__lede">
-        Netflix, Spotify, ChatGPT… Tek tek masum görünürler. Hepsini ekle, ayda ve yılda gerçekte ne
-        kadar ödediğini gör.
-      </p>
-      <div className="empty__cta">
+      <div className="empty__actions">
         <button className="btn btn--primary btn--lg" onClick={onAdd}>
-          İlk aboneliğini ekle
+          Abonelik ekle
         </button>
-        <button className="btn btn--ghost btn--lg" onClick={onDemo}>
+        <button className="btn btn--lg" onClick={onDemo}>
           Örnek verilerle dene
         </button>
       </div>
+      <p className="empty__fine">Hesap gerekmez. Veriler yalnızca bu tarayıcıda saklanır.</p>
     </section>
   )
 }
