@@ -1,6 +1,19 @@
 export type Currency = 'TRY' | 'USD' | 'EUR'
 export type Cycle = 'weekly' | 'monthly' | 'quarterly' | 'yearly'
-export type Category = 'video' | 'music' | 'ai' | 'gaming' | 'cloud' | 'productivity' | 'other'
+export type Category =
+  | 'video'
+  | 'tv'
+  | 'music'
+  | 'internet'
+  | 'mobile'
+  | 'shopping'
+  | 'ai'
+  | 'gaming'
+  | 'cloud'
+  | 'productivity'
+  | 'reading'
+  | 'fitness'
+  | 'other'
 
 export interface Subscription {
   id: string
@@ -13,7 +26,8 @@ export interface Subscription {
   /** ISO date (yyyy-mm-dd) of a known payment; future payments are derived from it. */
   billingDate: string
   category: Category
-  color: string
+  /** ISO date (yyyy-mm-dd) when a contract (taahhüt) ends, typical for telecom plans. */
+  commitmentEnd?: string
 }
 
 /** Value of one unit of each currency, expressed in TRY. */

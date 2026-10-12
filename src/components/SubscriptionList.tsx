@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { monthlyCost, nextPaymentDate } from '../lib/calc'
-import { CYCLE_LABEL, CYCLE_SUFFIX, formatDate, formatMoney } from '../lib/format'
+import { commitmentDaysLeft, monthlyCost, nextPaymentDate } from '../lib/calc'
+import { CYCLE_LABEL, CYCLE_SUFFIX, commitmentLabel, formatDate, formatMoney } from '../lib/format'
 import type { Currency, Rates, Subscription } from '../lib/types'
 import { ServiceIcon } from './ServiceIcon'
 
@@ -28,6 +28,7 @@ export function SubscriptionList({ subs, currency, rates, onAdd, onEdit }: Props
       sub: s,
       monthly: monthlyCost(s, currency, rates),
       next: nextPaymentDate(s),
+      commitment: commitmentDaysLeft(s),
     }))
     return withCost.sort((a, b) => {
       if (sort === 'cost') return b.monthly - a.monthly
@@ -55,14 +56,19 @@ export function SubscriptionList({ subs, currency, rates, onAdd, onEdit }: Props
       </header>
 
       <ul className="subs__list">
-        {rows.map(({ sub, monthly, next }) => (
+        {rows.map(({ sub, monthly, next, commitment }) => (
           <li key={sub.id}>
             <button className="sub-row" onClick={() => onEdit(sub)}>
               <ServiceIcon serviceId={sub.serviceId} name={sub.name} />
               <span className="sub-row__main">
                 <span className="sub-row__name">{sub.name}</span>
                 <span className="sub-row__meta">
-                  {[sub.plan, CYCLE_LABEL[sub.cycle]].filter(Boolean).join(' · ')}
+                  {sub.plan && sub.plan !== CYCLE_LABEL[sub.cycle]
+                    ? `${sub.plan} · ${CYCLE_LABEL[sub.cycle]}`
+                    : CYCLE_LABEL[sub.cycle]}
+                  {commitment !== null && (
+                    <span className={commitment <= 30 ? 'is-soon' : ''}> · {commitmentLabel(commitment)}</span>
+                  )}
                 </span>
               </span>
               <span className="sub-row__date">{formatDate(next)}</span>

@@ -12,31 +12,32 @@ function newId(): string {
 
 function demoSubscriptions(): Subscription[] {
   const today = new Date()
-  const picks: [string, string, number][] = [
-    ['netflix', 'Standart', 3],
-    ['spotify', 'Bireysel', 9],
-    ['chatgpt', 'Plus', 1],
-    ['claude', 'Pro', 17],
-    ['youtube', 'Bireysel', 22],
-    ['icloud', '200 GB', 5],
-    ['gamepass', 'Ultimate', 13],
-    ['exxen', 'Exxen', 27],
+  const inDays = (n: number) => toISODate(new Date(today.getFullYear(), today.getMonth(), today.getDate() + n))
+  const picks: { id: string; plan: string; offset: number; commitmentDays?: number }[] = [
+    { id: 'tt-internet', plan: '100 Mbps', offset: 6, commitmentDays: 214 },
+    { id: 'turkcell', plan: '20 GB', offset: 11, commitmentDays: 47 },
+    { id: 'netflix', plan: 'Standart', offset: 3 },
+    { id: 'spotify', plan: 'Bireysel', offset: 9 },
+    { id: 'chatgpt', plan: 'Plus', offset: 1 },
+    { id: 'youtube', plan: 'Bireysel', offset: 22 },
+    { id: 'icloud', plan: '200 GB', offset: 5 },
+    { id: 'trendyol', plan: 'Aylık', offset: 17 },
+    { id: 'tod', plan: 'Süper Lig', offset: 13 },
   ]
-  return picks.map(([serviceId, planName, offset]) => {
-    const service = SERVICE_BY_ID.get(serviceId)!
+  return picks.map(({ id, plan: planName, offset, commitmentDays }) => {
+    const service = SERVICE_BY_ID.get(id)!
     const plan = service.plans.find((p) => p.name === planName)!
-    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + offset)
     return {
       id: newId(),
-      serviceId,
+      serviceId: id,
       name: service.name,
       plan: plan.name,
       price: plan.price,
       currency: plan.currency,
       cycle: plan.cycle,
-      billingDate: toISODate(date),
+      billingDate: inDays(offset),
       category: service.category,
-      color: service.color,
+      ...(commitmentDays ? { commitmentEnd: inDays(commitmentDays) } : {}),
     }
   })
 }

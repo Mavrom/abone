@@ -76,3 +76,10 @@ export function parsePrice(value: string): number {
   if (/^\d{1,3}(\.\d{3})+$/.test(v)) return Number(v.replace(/\./g, ''))
   return Number(v)
 }
+
+export function commitmentLabel(daysLeft: number): string {
+  if (daysLeft < 0) return 'Taahhüt bitti'
+  if (daysLeft === 0) return 'Taahhüt bugün bitiyor'
+  if (daysLeft < 31) return `Taahhüt ${daysLeft} gün sonra bitiyor`
+  return `Taahhüt: ${Math.round(daysLeft / 30.44)} ay kaldı`
+}

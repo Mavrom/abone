@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parsePrice } from './format'
+import { commitmentLabel, parsePrice } from './format'
 
 describe('parsePrice', () => {
   it('parses dot and Turkish comma decimals', () => {
@@ -19,5 +19,16 @@ describe('parsePrice', () => {
   })
   it('returns NaN for garbage', () => {
     expect(parsePrice('abc')).toBeNaN()
+  })
+})
+
+describe('commitmentLabel', () => {
+  it('describes ended, ending and running commitments', () => {
+    expect(commitmentLabel(-3)).toBe('Taahhüt bitti')
+    expect(commitmentLabel(0)).toBe('Taahhüt bugün bitiyor')
+    expect(commitmentLabel(12)).toBe('Taahhüt 12 gün sonra bitiyor')
+    expect(commitmentLabel(45)).toBe('Taahhüt: 1 ay kaldı')
+    expect(commitmentLabel(365)).toBe('Taahhüt: 12 ay kaldı')
+    expect(commitmentLabel(400)).toBe('Taahhüt: 13 ay kaldı')
   })
 })

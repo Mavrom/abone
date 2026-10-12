@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
-import { CATALOG, CATEGORY_META, SERVICE_BY_ID, type Service } from '../data/catalog'
+import {
+  CATALOG,
+  CATEGORY_META,
+  COMMITMENT_CATEGORIES,
+  SERVICE_BY_ID,
+  matchesService,
+  type Service,
+} from '../data/catalog'
 import { monthlyCost } from '../lib/calc'
 import { CURRENCY_SYMBOL, CYCLE_LABEL, CYCLE_SUFFIX, formatMoney, parsePrice, toISODate } from '../lib/format'
 import type { Category, Currency, Cycle, Rates, Subscription } from '../lib/types'
@@ -33,7 +40,6 @@ function draftFromService(service: Service): Draft {
     cycle: plan.cycle,
     billingDate: toISODate(new Date()),
     category: service.category,
-    color: service.color,
   }
 }
 
@@ -47,7 +53,6 @@ function customDraft(name = ''): Draft {
     cycle: 'monthly',
     billingDate: toISODate(new Date()),
     category: 'other',
-    color: '#888888',
   }
 }
 
@@ -63,6 +68,7 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
   )
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<Category | 'all'>('all')
+  const [hasCommitment, setHasCommitment] = useState(!!initial?.commitmentEnd)
   const dialogRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -82,13 +88,16 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
   }, [picking])
 
   const services = useMemo(() => {
-    const q = query.trim().toLocaleLowerCase('tr-TR')
-    return CATALOG.filter(
-      (s) =>
-        (filter === 'all' || s.category === filter) &&
-        (!q || s.name.toLocaleLowerCase('tr-TR').includes(q)),
-    )
+    return CATALOG.filter((s) => (filter === 'all' || s.category === filter) && matchesService(s, query))
   }, [query, filter])
+
+  // Group by category only when browsing everything; searches and filters stay a flat list.
+  const groups: [Category | null, Service[]][] =
+    filter === 'all' && !query.trim()
+      ? CATEGORIES.map((c) => [c, services.filter((s) => s.category === c)] as [Category, Service[]]).filter(
+          ([, list]) => list.length > 0,
+        )
+      : [[null, services]]
 
   const service = draft?.serviceId ? SERVICE_BY_ID.get(draft.serviceId) : undefined
   const price = draft ? parsePrice(draft.price) : NaN
@@ -97,10 +106,22 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
 
   const update = (patch: Partial<Draft>) => setDraft((d) => (d ? { ...d, ...patch } : d))
 
+  const startWith = (s: Service) => {
+    setDraft(draftFromService(s))
+    setHasCommitment(false)
+  }
+
   const submit = (e: FormEvent) => {
     e.preventDefault()
     if (!valid || !draft) return
-    onSave({ ...draft, name: draft.name.trim(), plan: draft.plan.trim(), price })
+    const { commitmentEnd, ...rest } = draft
+    onSave({
+      ...rest,
+      name: draft.name.trim(),
+      plan: draft.plan.trim(),
+      price,
+      ...(hasCommitment && commitmentEnd ? { commitmentEnd } : {}),
+    })
     onClose()
   }
 
@@ -134,7 +155,7 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
               onChange={(e) => setQuery(e.target.value)}
               data-autofocus
             />
-            <div className="chips">
+            <div className="chips chips--scroll">
               <button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>
                 Tümü
               </button>
@@ -144,31 +165,36 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
                 </button>
               ))}
             </div>
-            <ul className="picker__list">
-              {services.map((s) => {
-                const low = cheapestPlan(s, rates)
-                return (
-                  <li key={s.id}>
-                    <button className="picker__item" onClick={() => setDraft(draftFromService(s))}>
-                      <ServiceIcon serviceId={s.id} name={s.name} />
-                      <span className="picker__name">{s.name}</span>
-                      <span className="picker__price">
-                        {formatMoney(low.price, low.currency)}
-                        {CYCLE_SUFFIX[low.cycle]}
-                      </span>
-                    </button>
-                  </li>
-                )
-              })}
-              <li>
-                <button className="picker__item" onClick={() => setDraft(customDraft(query.trim()))}>
-                  <span className="service-icon service-icon--dashed">+</span>
-                  <span className="picker__name">
-                    {query.trim() ? `“${query.trim()}” ekle` : 'Listede yok, kendim ekleyeceğim'}
-                  </span>
-                </button>
-              </li>
-            </ul>
+            <div className="picker__list">
+              {groups.map(([category, list]) => (
+                <section key={category ?? 'all'}>
+                  {category && <h3 className="picker__group">{CATEGORY_META[category].label}</h3>}
+                  <ul>
+                    {list.map((s) => {
+                      const low = cheapestPlan(s, rates)
+                      return (
+                        <li key={s.id}>
+                          <button className="picker__item" onClick={() => startWith(s)}>
+                            <ServiceIcon serviceId={s.id} name={s.name} />
+                            <span className="picker__name">{s.name}</span>
+                            <span className="picker__price">
+                              {formatMoney(low.price, low.currency)}
+                              {CYCLE_SUFFIX[low.cycle]}
+                            </span>
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </section>
+              ))}
+              <button className="picker__item" onClick={() => setDraft(customDraft(query.trim()))}>
+                <span className="service-icon service-icon--dashed">+</span>
+                <span className="picker__name">
+                  {query.trim() ? `“${query.trim()}” ekle` : 'Listede yok, kendim ekleyeceğim'}
+                </span>
+              </button>
+            </div>
           </div>
         ) : (
           <form className="form" onSubmit={submit}>
@@ -296,6 +322,39 @@ export function SubscriptionSheet({ initial, displayCurrency, rates, onClose, on
                       </option>
                     ))}
                   </select>
+                </label>
+              )}
+            </div>
+
+            <div className="field">
+              <label className="check">
+                <input
+                  type="checkbox"
+                  checked={hasCommitment}
+                  onChange={(e) => {
+                    setHasCommitment(e.target.checked)
+                    if (e.target.checked && !draft.commitmentEnd) {
+                      const d = new Date()
+                      update({ commitmentEnd: toISODate(new Date(d.getFullYear() + 1, d.getMonth(), d.getDate())) })
+                    }
+                  }}
+                />
+                <span>
+                  Taahhüt var
+                  {!hasCommitment && COMMITMENT_CATEGORIES.includes(draft.category) && (
+                    <span className="muted"> · internet, hat ve TV paketlerinde yaygın</span>
+                  )}
+                </span>
+              </label>
+              {hasCommitment && (
+                <label className="field">
+                  <span className="field__label">Taahhüt bitiş tarihi</span>
+                  <input
+                    type="date"
+                    className="input"
+                    value={draft.commitmentEnd ?? ''}
+                    onChange={(e) => update({ commitmentEnd: e.target.value })}
+                  />
                 </label>
               )}
             </div>

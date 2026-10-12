@@ -431,6 +431,10 @@ button:disabled {
   white-space: nowrap;
 }
 
+.sub-row__meta .is-soon {
+  color: var(--accent);
+}
+
 .sub-row__date {
   font-size: 13px;
   color: var(--muted);
@@ -712,8 +716,40 @@ select.input {
   border-color: var(--text);
 }
 
+.chips--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px 2px;
+  scrollbar-width: none;
+}
+
+.chips--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chips--scroll button {
+  flex: none;
+}
+
 .picker__list {
   margin: 0 -8px;
+}
+
+.picker__group {
+  position: sticky;
+  top: -12px;
+  z-index: 1;
+  margin: 10px 0 2px;
+  padding: 6px 8px;
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+.picker__list section:first-child .picker__group {
+  margin-top: 0;
 }
 
 .picker__item {
@@ -785,6 +821,20 @@ select.input {
 
 .form__row .segmented button {
   height: 32px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.check input {
+  margin: 0;
+  width: 15px;
+  height: 15px;
+  accent-color: var(--text);
 }
 
 .plans {

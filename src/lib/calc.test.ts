@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   byCategory,
+  commitmentDaysLeft,
   convert,
   equivalents,
   monthlyCost,
@@ -23,7 +24,6 @@ function sub(over: Partial<Subscription> = {}): Subscription {
     cycle: 'monthly',
     billingDate: '2026-01-15',
     category: 'video',
-    color: '#fff',
     ...over,
   }
 }
@@ -144,5 +144,20 @@ describe('equivalents', () => {
       { id: 'tea', label: 'çay', emoji: '🍵', priceTRY: 30, count: 33 },
       { id: 'big', label: 'pahalı', emoji: '💎', priceTRY: 5000, count: 0 },
     ])
+  })
+})
+
+describe('commitmentDaysLeft', () => {
+  const today = new Date(2026, 9, 12)
+
+  it('is null without a commitment', () => {
+    expect(commitmentDaysLeft(sub(), today)).toBeNull()
+  })
+  it('counts days until the commitment ends', () => {
+    expect(commitmentDaysLeft(sub({ commitmentEnd: '2026-10-22' }), today)).toBe(10)
+    expect(commitmentDaysLeft(sub({ commitmentEnd: '2026-10-12' }), today)).toBe(0)
+  })
+  it('is negative once the commitment has ended', () => {
+    expect(commitmentDaysLeft(sub({ commitmentEnd: '2026-10-01' }), today)).toBe(-11)
   })
 })

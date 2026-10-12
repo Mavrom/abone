@@ -90,6 +90,12 @@ export function daysBetween(from: Date, to: Date): number {
   return Math.round((startOfDay(to).getTime() - startOfDay(from).getTime()) / DAY_MS)
 }
 
+/** Days until the contract ends (negative once it has ended), or null if there is none. */
+export function commitmentDaysLeft(sub: Subscription, today: Date = new Date()): number | null {
+  if (!sub.commitmentEnd) return null
+  return daysBetween(today, parseISODate(sub.commitmentEnd))
+}
+
 export interface UpcomingPayment {
   sub: Subscription
   date: Date
