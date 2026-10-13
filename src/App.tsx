@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { useCallback, useMemo, useState } from 'react'
 import { CategoryBreakdown } from './components/CategoryBreakdown'
 import { EmptyState } from './components/EmptyState'
@@ -9,6 +10,7 @@ import { UpcomingPayments } from './components/UpcomingPayments'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useRates } from './hooks/useRates'
 import { useSubscriptions } from './hooks/useSubscriptions'
+import { analytics } from './lib/analytics'
 import { byCategory, totals, upcoming } from './lib/calc'
 import { formatDate } from './lib/format'
 import type { Currency, Subscription } from './lib/types'
@@ -37,13 +39,36 @@ export default function App() {
   const openAdd = useCallback(() => setSheet({ mode: 'add' }), [])
   const closeSheet = useCallback(() => setSheet({ mode: 'closed' }), [])
 
+  const handleSave = (sub: Omit<Subscription, 'id'> & { id?: string }) => {
+    save(sub)
+    if (sheet.mode === 'edit') analytics.subscriptionEdited(sub)
+    else analytics.subscriptionAdded(sub)
+  }
+
+  const handleRemove = (id: string) => {
+    const sub = subs.find((s) => s.id === id)
+    remove(id)
+    if (sub) analytics.subscriptionRemoved(sub)
+  }
+
+  const handleDemo = () => {
+    loadDemo()
+    analytics.demoLoaded()
+  }
+
+  const handleCurrency = (next: Currency) => {
+    if (next === currency) return
+    setCurrency(next)
+    analytics.currencyChanged(next)
+  }
+
   return (
     <>
-      <Header currency={currency} onCurrency={setCurrency} onAdd={openAdd} />
+      <Header currency={currency} onCurrency={handleCurrency} onAdd={openAdd} />
 
       <main className="page">
         {subs.length === 0 ? (
-          <EmptyState onAdd={openAdd} onDemo={loadDemo} />
+          <EmptyState onAdd={openAdd} onDemo={handleDemo} />
         ) : (
           <>
             <Summary totals={summary.totals} currency={currency} count={subs.length} yearlyTRY={summary.yearlyTRY} />
@@ -95,10 +120,12 @@ export default function App() {
           displayCurrency={currency}
           rates={rates}
           onClose={closeSheet}
-          onSave={save}
-          onDelete={remove}
+          onSave={handleSave}
+          onDelete={handleRemove}
         />
       )}
+
+      <Analytics />
     </>
   )
 }
