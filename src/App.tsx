@@ -125,8 +125,7 @@ export default function App() {
         />
       )}
 
-      {/* Served through neutral paths (see vercel.json) so ad blockers don't drop the stats. */}
-      <Analytics scriptSrc="/m/s.js" endpoint="/m/e" />
+      <Analytics />
     </>
   )
 }
